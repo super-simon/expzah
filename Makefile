@@ -25,6 +25,7 @@ git_pull_expedite:
 	fi
 
 prepare_loc:
+	cp .env.$(ENV_LOC) .env
 	make -C ./expedite prepare_loc
 	make -C ./zahid prepare_loc
 	cd common-nginx; cp conf.$(ENV_LOC) ./conf.d/default.conf
