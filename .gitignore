@@ -1,2 +1,4 @@
 zahid
 expedite
+/common-nginx/certs/
+/common-nginx/conf.d/
