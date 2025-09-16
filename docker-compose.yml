@@ -1,0 +1,106 @@
+services:
+  expedite-frontend:
+    build: ./expedite/frontend
+    container_name: expedite-frontend
+    volumes:
+      - ./exedite/frontend/:/app/expedite/frontend
+    ports:
+      - 15173:5173
+      - 14173:4173
+      - 15001:5001
+    depends_on:
+      - expedite-backend
+
+  expedite-backend:
+    build: ./expedite/backend
+    container_name: expedite-backend
+    volumes:
+      - ./expedite/backend:/app/expedite/backend
+    ports:
+      - 13000:3000
+      # - 9229:9229
+    depends_on:
+      - expedite-mongo
+
+  expedite-mongo:
+    image: mongo:7.0.15
+    container_name: expedite-mongo
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME:baskim
+      - MONGO_INITDB_ROOT_PASSWORD:yesno
+    volumes:
+      - ./zahid/.mongo_data:/data/db
+    # ports:
+    #   - 27017:27017
+
+  zahid-backend:
+    container_name: zahid-backend
+    build: ./zahid/backend
+    restart: unless-stopped
+    ports:
+      - 23000:3000
+    depends_on:
+      - zahid-postgres
+      # - redis
+    volumes:
+      - ./zahid/backend:/app/zahid/backend
+      - ./zahid/shared/public:/app/zahid/public
+      - ./shared/zahid/uploads:/app/zahid/uploads
+
+  zahid-adminka:
+    container_name: zahid-adminka
+    build: ./zahid/adminka
+    restart: unless-stopped
+    ports:
+      - 25173:5173
+      - 24173:4173
+      - 25001:5001
+    volumes:
+      - ./zahid/adminka/:/app/zahid/adminka
+      - ./shared/zahid/public:/app/zahid/public:ro
+      - ./shared/zahid/uploads:/app/zahid/uploads:ro
+      - ./shared/zahid/static:/var/www/zahid/static:ro
+    depends_on:
+      - zahid-backend
+
+  zahid-frontend:
+    container_name: zahid-frontend
+    build: ./zahid/frontend
+    restart: unless-stopped
+    ports:
+      - 23010:3000
+    volumes:
+      - ./zahid/frontend:/app/zahid/frontend
+      - ./shared/zahid/public:/app/zahid/public:ro
+      - ./shared/zahid/static:/var/www/zahid/static:ro
+    depends_on:
+      - zahid/backend
+
+  zahid-postgres:
+    image: postgis/postgis
+    container_name: zahid-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-zahid}
+      POSTGRES_USER: ${POSTGRES_USER:-zahid}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-zahid123}
+    ports:
+      - "${POSTGRES_EXTERNAL_PORT:-5432}:5432"
+    volumes:
+      - ./zahid/${PGDATA_PATH}:/var/lib/postgresql/data
+
+  nginx:
+    container_name: nginx
+    image: nginx:stable-alpine
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./common-nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./common-nginx/certs:/etc/nginx/certs:ro
+      - ./zahid/shared/public:/var/www/zahid/public:ro
+      - ./zahid/shared/static:/var/www/zahid/static:ro
+    depends_on:
+      - zaid/frontend

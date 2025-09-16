@@ -1,0 +1,103 @@
+server {
+    listen 80;
+    server_name zah.loc adminka.zah.loc exp.loc;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name zah.loc;
+
+    ssl_certificate /etc/nginx/certs/zah.loc-cert.pem;
+    ssl_certificate_key /etc/nginx/certs/zah.loc-key.pem;
+
+    # Під Next.js static (своє кешування)
+    location /_next/static/ {
+        proxy_pass http://zahid-frontend:23000/_next/static/;
+        proxy_set_header Host $host;
+        proxy_cache_valid 200 30d;
+        access_log off;
+    }
+
+    location /public/ {
+        alias /var/www/zahid/public/;
+        access_log off;
+        expires max;
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+    }
+
+    # Подаємо все з public напряму
+    location / {
+        root /var/www/zahid/static;
+        try_files $uri @next;
+        access_log off;
+        expires max;
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+    }
+
+    location @next {
+        proxy_pass http://zahid-frontend:23000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+
+server {
+    listen 443 ssl;
+    server_name adminka.zah.loc;
+
+    ssl_certificate /etc/nginx/certs/adminka.zah.loc-cert.pem;
+    ssl_certificate_key /etc/nginx/certs/adminka.zah.loc-key.pem;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    location /public/ {
+        alias /var/www/zahid/public/;
+        access_log off;
+        expires max;
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+    }
+
+    location / {
+        root /var/www/zahid/static;
+        try_files $uri @vite;
+        access_log off;
+        expires max;
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+    }
+
+    location @vite {
+        proxy_pass https://zahid-adminka:25173;
+        proxy_ssl_verify off;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+
+server {
+    listen 443 ssl;
+    server_name exp.loc;
+
+    ssl_certificate /etc/nginx/certs/exp.loc-cert.pem;
+    ssl_certificate_key /etc/nginx/certs/exp.loc-key.pem;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    location @vite {
+        proxy_pass https://zahid-adminka:15173;
+        proxy_ssl_verify off;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
