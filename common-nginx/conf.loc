@@ -91,6 +91,14 @@ server {
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers HIGH:!aNULL:!MD5;
 
+    location / {
+        root /var/www/zahid/static;
+        try_files $uri @vite;
+        access_log off;
+        expires max;
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+    }
+
     location @vite {
         proxy_pass https://zahid-adminka:15173;
         proxy_ssl_verify off;

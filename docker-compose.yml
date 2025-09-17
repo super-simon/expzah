@@ -3,11 +3,11 @@ services:
     build: ./expedite/frontend
     container_name: expedite-frontend
     volumes:
-      - ./exedite/frontend/:/app/expedite/frontend
-    ports:
-      - 15173:5173
-      - 14173:4173
-      - 15001:5001
+      - ./exedite/frontend/:/app
+    # ports:
+    # - 5173:5173
+    # - 4173:4173
+    # - 5001:5001
     depends_on:
       - expedite-backend
 
@@ -15,9 +15,9 @@ services:
     build: ./expedite/backend
     container_name: expedite-backend
     volumes:
-      - ./expedite/backend:/app/expedite/backend
+      - ./expedite/backend:/app
     ports:
-      - 13000:3000
+      - 8000:3000
       # - 9229:9229
     depends_on:
       - expedite-mongo
@@ -30,7 +30,7 @@ services:
       - MONGO_INITDB_ROOT_USERNAME:baskim
       - MONGO_INITDB_ROOT_PASSWORD:yesno
     volumes:
-      - ./zahid/.mongo_data:/data/db
+      - ./expedite/.mongo_data:/data/db
     # ports:
     #   - 27017:27017
 
@@ -39,28 +39,28 @@ services:
     build: ./zahid/backend
     restart: unless-stopped
     ports:
-      - 23000:3000
+      - 3000:3000
     depends_on:
       - zahid-postgres
       # - redis
     volumes:
-      - ./zahid/backend:/app/zahid/backend
-      - ./zahid/shared/public:/app/zahid/public
-      - ./shared/zahid/uploads:/app/zahid/uploads
+      - ./zahid/backend:/app
+      - ./zahid/shared/public:/app/public
+      - ./zahid/shared/uploads:/app/uploads
 
   zahid-adminka:
     container_name: zahid-adminka
     build: ./zahid/adminka
     restart: unless-stopped
-    ports:
-      - 25173:5173
-      - 24173:4173
-      - 25001:5001
+    # ports:
+    # - 5173:5173
+    # - 4173:4173
+    # - 5001:5001
     volumes:
-      - ./zahid/adminka/:/app/zahid/adminka
-      - ./shared/zahid/public:/app/zahid/public:ro
-      - ./shared/zahid/uploads:/app/zahid/uploads:ro
-      - ./shared/zahid/static:/var/www/zahid/static:ro
+      - ./zahid/adminka/:/app
+      - ./zahid/shared/public:/app/public:ro
+      - ./zahid/shared/uploads:/app/uploads:ro
+      - ./zahid/shared/static:/var/www/zahid/static:ro
     depends_on:
       - zahid-backend
 
@@ -69,13 +69,13 @@ services:
     build: ./zahid/frontend
     restart: unless-stopped
     ports:
-      - 23010:3000
+      - 3010:3000
     volumes:
-      - ./zahid/frontend:/app/zahid/frontend
-      - ./shared/zahid/public:/app/zahid/public:ro
-      - ./shared/zahid/static:/var/www/zahid/static:ro
+      - ./zahid/frontend:/app
+      - ./zahid/shared/public:/app/public:ro
+      - ./zahid/shared/static:/var/www/zahid/static:ro
     depends_on:
-      - zahid/backend
+      - zahid-backend
 
   zahid-postgres:
     image: postgis/postgis
@@ -100,7 +100,9 @@ services:
     volumes:
       - ./common-nginx/conf.d:/etc/nginx/conf.d:ro
       - ./common-nginx/certs:/etc/nginx/certs:ro
-      - ./zahid/shared/public:/var/www/zahid/public:ro
-      - ./zahid/shared/static:/var/www/zahid/static:ro
+      - ./zahid/shared/public:/var/www/public:ro
+      - ./zahid/shared/static:/var/www/static:ro
     depends_on:
-      - zaid/frontend
+      - zahid-frontend
+      - zahid-adminka
+      - expedite-frontend
