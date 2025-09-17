@@ -71,7 +71,7 @@ server {
     }
 
     location @vite {
-        proxy_pass https://zahid-adminka:5173;
+        proxy_pass https://zahid-adminka:4173;
         proxy_ssl_verify off;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
@@ -100,7 +100,7 @@ server {
     }
 
     location @vite {
-        proxy_pass https://expedite-frontend:5173;
+        proxy_pass https://expedite-frontend:4173;
         proxy_ssl_verify off;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
