@@ -1,0 +1,72 @@
+services:
+  zahid-backend:
+    container_name: zahid-backend
+    build: ./zahid/backend
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    depends_on:
+      - zahid-postgres
+      # - redis
+    volumes:
+      - ./zahid/backend:/app
+      - ./zahid/shared/public:/app/public
+      - ./zahid/shared/uploads:/app/uploads
+
+  zahid-adminka:
+    container_name: zahid-adminka
+    build: ./zahid/adminka
+    restart: unless-stopped
+    # ports:
+    # - 5173:5173
+    # - 4173:4173
+    # - 5001:5001
+    volumes:
+      - ./zahid/adminka/:/app
+      - ./zahid/shared/public:/app/public:ro
+      - ./zahid/shared/uploads:/app/uploads:ro
+      - ./zahid/shared/static:/var/www/static:ro
+    depends_on:
+      - zahid-backend
+
+  zahid-frontend:
+    container_name: zahid-frontend
+    build: ./zahid/frontend
+    restart: unless-stopped
+    ports:
+      - 3010:3000
+    volumes:
+      - ./zahid/frontend:/app
+      - ./zahid/shared/public:/app/public:ro
+      - ./zahid/shared/static:/var/www/static:ro
+    depends_on:
+      - zahid-backend
+
+  zahid-postgres:
+    image: postgis/postgis
+    container_name: zahid-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-zahid}
+      POSTGRES_USER: ${POSTGRES_USER:-zahid}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-zahid123}
+    ports:
+      - "${POSTGRES_EXTERNAL_PORT:-5432}:5432"
+    volumes:
+      - ./zahid/${PGDATA_PATH}:/var/lib/postgresql/data
+
+  nginx:
+    container_name: nginx
+    image: nginx:stable-alpine
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./common-nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./common-nginx/certs:/etc/nginx/certs:ro
+      - ./zahid/shared/public:/var/www/public:ro
+      - ./zahid/shared/static:/var/www/static:ro
+    depends_on:
+      - zahid-frontend
+      - zahid-adminka
