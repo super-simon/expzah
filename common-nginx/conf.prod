@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name zahid.domain adminka.zahid.domain expedite.top;
+    server_name zahidgroup.net adminka.zahidgroup.net expedite.top;
     return 301 https://$host$request_uri;
 }
 
