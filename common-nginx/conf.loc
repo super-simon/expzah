@@ -13,14 +13,14 @@ server {
 
     # Під Next.js static (своє кешування)
     location /_next/static/ {
-        proxy_pass http://zahid-frontend:23000/_next/static/;
+        proxy_pass http://zahid-frontend:3000/_next/static/;
         proxy_set_header Host $host;
         proxy_cache_valid 200 30d;
         access_log off;
     }
 
     location /public/ {
-        alias /var/www/zahid/public/;
+        alias /var/www/public/;
         access_log off;
         expires max;
         add_header Cache-Control "no-cache, no-store, must-revalidate";
@@ -28,7 +28,7 @@ server {
 
     # Подаємо все з public напряму
     location / {
-        root /var/www/zahid/static;
+        root /var/www/static;
         try_files $uri @next;
         access_log off;
         expires max;
@@ -36,7 +36,7 @@ server {
     }
 
     location @next {
-        proxy_pass http://zahid-frontend:23000;
+        proxy_pass http://zahid-frontend:3000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
@@ -56,14 +56,14 @@ server {
     ssl_ciphers HIGH:!aNULL:!MD5;
 
     location /public/ {
-        alias /var/www/zahid/public/;
+        alias /var/www/public/;
         access_log off;
         expires max;
         add_header Cache-Control "no-cache, no-store, must-revalidate";
     }
 
     location / {
-        root /var/www/zahid/static;
+        root /var/www/static;
         try_files $uri @vite;
         access_log off;
         expires max;
@@ -71,7 +71,7 @@ server {
     }
 
     location @vite {
-        proxy_pass https://zahid-adminka:25173;
+        proxy_pass https://zahid-adminka:5173;
         proxy_ssl_verify off;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
@@ -92,7 +92,7 @@ server {
     ssl_ciphers HIGH:!aNULL:!MD5;
 
     location / {
-        root /var/www/zahid/static;
+        root /var/www/static;
         try_files $uri @vite;
         access_log off;
         expires max;
@@ -100,7 +100,7 @@ server {
     }
 
     location @vite {
-        proxy_pass https://zahid-adminka:15173;
+        proxy_pass https://expedite-frontend:5173;
         proxy_ssl_verify off;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;

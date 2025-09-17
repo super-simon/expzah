@@ -3,7 +3,7 @@ services:
     build: ./expedite/frontend
     container_name: expedite-frontend
     volumes:
-      - ./exedite/frontend/:/app
+      - ./expedite/frontend/:/app
     # ports:
     # - 5173:5173
     # - 4173:4173
@@ -60,7 +60,7 @@ services:
       - ./zahid/adminka/:/app
       - ./zahid/shared/public:/app/public:ro
       - ./zahid/shared/uploads:/app/uploads:ro
-      - ./zahid/shared/static:/var/www/zahid/static:ro
+      - ./zahid/shared/static:/var/www/static:ro
     depends_on:
       - zahid-backend
 
@@ -73,7 +73,7 @@ services:
     volumes:
       - ./zahid/frontend:/app
       - ./zahid/shared/public:/app/public:ro
-      - ./zahid/shared/static:/var/www/zahid/static:ro
+      - ./zahid/shared/static:/var/www/static:ro
     depends_on:
       - zahid-backend
 

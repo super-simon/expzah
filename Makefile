@@ -30,9 +30,22 @@ prepare_loc:
 	make -C ./zahid prepare_loc
 	cd common-nginx; cp conf.$(ENV_LOC) ./conf.d/default.conf
 
+prepare_prod:
+	cp .env.$(ENV_PROD) .env
+	make -C ./expedite prepare_prod
+	make -C ./zahid prepare_prod
+	cd common-nginx; cp conf.$(ENV_PROD) ./conf.d/default.conf
+
 cert_loc:
 	make -C ./expedite cert_loc
 	make -C ./zahid cert_loc
+	cp ./zahid/nginx/certs/* ./common-nginx/certs/
+	cp ./expedite/frontend/cert/cert.pem ./common-nginx/certs/exp.loc-cert.pem
+	cp ./expedite/frontend/cert/key.pem ./common-nginx/certs/exp.loc-key.pem
+
+cert_prod:
+	make -C ./expedite cert_prod
+	make -C ./zahid cert_prod
 	cp ./zahid/nginx/certs/* ./common-nginx/certs/
 	cp ./expedite/frontend/cert/cert.pem ./common-nginx/certs/exp.loc-cert.pem
 	cp ./expedite/frontend/cert/key.pem ./common-nginx/certs/exp.loc-key.pem
