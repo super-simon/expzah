@@ -6,7 +6,7 @@ server {
 
 server {
     listen 443 ssl;
-    server_name zahid.docmain;
+    server_name zahidgroup.net;
 
     ssl_certificate /etc/nginx/certs/zahid.domain-cert.pem;
     ssl_certificate_key /etc/nginx/certs/zahid.domain-key.pem;
@@ -47,7 +47,7 @@ server {
 
 server {
     listen 443 ssl;
-    server_name adminka.zahid.domain;
+    server_name adminka.zahidgroup.net;
 
     ssl_certificate /etc/nginx/certs/adminka.zahid.domain-cert.pem;
     ssl_certificate_key /etc/nginx/certs/adminka.zahid.domain-key.pem;
