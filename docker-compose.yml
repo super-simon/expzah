@@ -4,10 +4,10 @@ services:
     container_name: expedite-frontend
     volumes:
       - ./expedite/frontend/:/app
-    # ports:
-    # - 5173:5173
-    # - 4173:4173
-    # - 5001:5001
+    ports:
+      # - 5173:5173
+      # - 4173:4173
+      - 5002:5002
     depends_on:
       - expedite-backend
 
@@ -52,10 +52,10 @@ services:
     container_name: zahid-adminka
     build: ./zahid/adminka
     restart: unless-stopped
-    # ports:
-    # - 5173:5173
-    # - 4173:4173
-    # - 5001:5001
+    ports:
+      # - 5173:5173
+      # - 4173:4173
+      - 5001:5001
     volumes:
       - ./zahid/adminka/:/app
       - ./zahid/shared/public:/app/public:ro
